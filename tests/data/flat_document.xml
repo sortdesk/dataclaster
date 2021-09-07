@@ -1,6 +1,6 @@
 <note>
-    <to>Tove</to>
-    <from>Jani</from>
+    <recipient>Tove</recipient>
+    <sender>Jani</sender>
     <heading>Reminder</heading>
     <body>Don't forget me this weekend!</body>
 </note>
