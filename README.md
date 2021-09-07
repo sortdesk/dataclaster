@@ -1,0 +1,1 @@
+This project requires at least python3.7.
