@@ -1,6 +1,6 @@
 <note>
-    <recipient>Tove</recipient>
-    <sender>Jani</sender>
+    <recipient gender="female">Tove</recipient>
+    <sender gender="male">Jani</sender>
     <heading>Reminder</heading>
-    <body>Don't forget me this weekend!</body>
+    <body lang="en">Don't forget me this weekend!</body>
 </note>
