@@ -1,12 +1,8 @@
-from dataclasses import fields, field as dcfield
-from typing import Type
+from dataclasses import fields, Field, MISSING
 from datetime import datetime
 from distutils.util import strtobool
 
 from dateutil.parser import parse
-
-
-CONF_KEY_NAME = "_config"  # TODO: maybe UID?
 
 
 class Config:
@@ -38,18 +34,19 @@ class XMLMixin:
 
     @classmethod
     def process_field(cls, field, xml_tree):
-        if isinstance(field.metadata.get(CONF_KEY_NAME), XMLConfig):
+        if hasattr(field, "config"):
+            if not isinstance(field.config, XMLConfig):
+                raise ValueError("You must pass a valid instance of XMLConfig to the `config` parameter.")
             return cls.process_field_with_config(field, xml_tree)
         else:
             return cls.process_field_without_config(field, xml_tree)
 
     @classmethod
     def process_field_with_config(cls, field, xml_tree):
-        config = field.metadata[CONF_KEY_NAME]
-        element = xml_tree.find(config.xpath)
+        element = xml_tree.find(field.config.xpath)
 
-        if config.attrib:
-            attrib_text = element.get(config.attrib)
+        if field.config.attrib:
+            attrib_text = element.get(field.config.attrib)
             return cls.cast_data_type(attrib_text, field.type)
         else:
             element_text = element.text
@@ -65,8 +62,19 @@ class XMLMixin:
         return dc
 
 
-def fieldwrapper(config: Type[Config], *args, **kwargs):
-    # TODO: this will break if `field()` is called with args only
-    metadata = kwargs.setdefault("metadata", {})
-    metadata[CONF_KEY_NAME] = config
-    return dcfield(*args, **kwargs)
+class FieldWithConfig(Field):
+    def __init__(self, config, *args, **kwargs) -> None:
+        self.config = config
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self) -> str:
+        repr = super().__repr__()
+        return f"{repr[:-1]},config={self.config!r})"
+
+
+def fieldwrapper(*, config, default=MISSING, default_factory=MISSING, init=True,
+                 repr=True, hash=None, compare=True, metadata=None):
+
+    if default is not MISSING and default_factory is not MISSING:
+        raise ValueError('cannot specify both default and default_factory')
+    return FieldWithConfig(config, default, default_factory, init, repr, hash, compare, metadata)

@@ -146,7 +146,7 @@ class TestFieldConfig(unittest.TestCase):
 
         something = Something(name="Pierre")
 
-        self.assertTrue(isinstance(something.__dataclass_fields__["name"].metadata["_config"], Config))
+        self.assertTrue(isinstance(something.__dataclass_fields__["name"].config, Config))
 
     def test_datatype_casting_for_simple_types(self):
         biscuit_dc = self.Biscuit.from_xml(self.biscuit_tree)
