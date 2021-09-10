@@ -1,13 +1,13 @@
-from unittest.case import TestCase
+import unittest
 
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
 
-from xml_mixin import XMLMixin, Config, fieldwrapper
+from xml_mixin import XMLMixin, Config, XMLConfig, fieldwrapper
 
 
-class TestXMLMixin(TestCase):
+class TestXMLMixin(unittest.TestCase):
 
     def setUp(self) -> None:
         @dataclass
@@ -45,25 +45,25 @@ class TestXMLMixin(TestCase):
 
         self.assertTrue(all_tags_match)
 
-    # def test_from_xml_attributes(self):
-    #     @dataclass
-    #     class NoteWithAttributes(self.Note):
-    #         recipient_gender: str = field(metadata=XMLConfig({"xpath": "./recipient", "attrib": "gender"}))
-    #         sender_gender: str = field(metadata=XMLConfig({"xpath": "./sender", "attrib": "gender"}))
-    #         body_lang: str = field(metadata=XMLConfig({"xpath": "./body", "attrib": "lang"}))
+    def test_from_xml_attributes(self):
+        @dataclass
+        class NoteWithAttributes(self.Note):
+            recipient_gender: str = fieldwrapper(config=XMLConfig(xpath="./recipient", attrib="gender"))
+            sender_gender: str = fieldwrapper(config=XMLConfig(xpath="./sender", attrib="gender"))
+            body_lang: str = fieldwrapper(config=XMLConfig(xpath="./body", attrib="lang"))
 
-    #     note_dc = NoteWithAttributes.from_xml(self.note_tree)
+        note_dc = NoteWithAttributes.from_xml(self.note_tree)
 
-    #     all_attributes_match = all([
-    #         self.note_tree.find("recipient").get("gender") == note_dc.recipient_gender,
-    #         self.note_tree.find("sender").get("gender") == note_dc.sender_gender,
-    #         self.note_tree.find("body").get("lang") == note_dc.body_lang
-    #     ])
+        all_attributes_match = all([
+            self.note_tree.find("recipient").get("gender") == note_dc.recipient_gender,
+            self.note_tree.find("sender").get("gender") == note_dc.sender_gender,
+            self.note_tree.find("body").get("lang") == note_dc.body_lang
+        ])
 
-    #     self.assertTrue(all_attributes_match)
+        self.assertTrue(all_attributes_match)
 
 
-class TestFieldConfig(TestCase):
+class TestFieldConfig(unittest.TestCase):
 
     def test_fieldwrapper_preserves_metadata(self):
         config = Config()
@@ -86,3 +86,7 @@ class TestFieldConfig(TestCase):
         something = Something(name="Pierre")
 
         self.assertTrue(isinstance(something.__dataclass_fields__["name"].metadata["_config"], Config))
+
+
+if __name__ == '__main__':
+    unittest.main()
