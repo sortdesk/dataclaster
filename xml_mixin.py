@@ -18,7 +18,20 @@ class XMLConfig(Config):
 class XMLMixin:
     SIMPLE_TYPES = [str, int, float]
     SPECIAL_TYPES = [bool, datetime]
+    COMPLEX_TYPES = [list]
     SUPPORTED_TYPES = SIMPLE_TYPES + SPECIAL_TYPES
+
+    @classmethod
+    def cast_special_type(self, value, data_type):
+        if data_type == bool:
+            return bool(strtobool(value))
+        elif data_type == datetime:
+            return parse(value)
+
+    @classmethod
+    def cast_complex_type(self, value, data_type):
+        if data_type == list:
+            pass
 
     @classmethod
     def cast_data_type(cls, value, data_type=str):
@@ -27,10 +40,10 @@ class XMLMixin:
 
         if data_type in cls.SIMPLE_TYPES:
             return data_type(value)
-        elif data_type == bool:
-            return bool(strtobool(value))
-        elif data_type == datetime:
-            return parse(value)
+        elif data_type in cls.SPECIAL_TYPES:
+            return cls.cast_special_type(value, data_type)
+        elif data_type in cls.COMPLEX_TYPES:
+            return cls.cast_complex_type(value, data_type)
 
     @classmethod
     def process_field(cls, field, xml_tree):
