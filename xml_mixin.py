@@ -3,6 +3,9 @@ from typing import Type
 # from xml.etree.ElementTree import XML
 
 
+CONF_KEY_NAME = "_config"  # TODO: maybe UID?
+
+
 class Config:
     pass
 
@@ -16,8 +19,8 @@ class XMLConfig(Config):
 class XMLMixin:
     @classmethod
     def process_field(cls, field, xml_tree):
-        if isinstance(field.metadata.get("_config"), XMLConfig):
-            config = field.metadata["_config"]
+        if isinstance(field.metadata.get(CONF_KEY_NAME), XMLConfig):
+            config = field.metadata[CONF_KEY_NAME]
             return cls.process_field_with_config(config, xml_tree)
         else:
             return cls.process_field_without_config(field, xml_tree)
@@ -43,5 +46,5 @@ class XMLMixin:
 def fieldwrapper(config: Type[Config], *args, **kwargs):
     # TODO: this will break if `field()` is called with args only
     metadata = kwargs.setdefault("metadata", {})
-    metadata["_config"] = config
+    metadata[CONF_KEY_NAME] = config
     return dcfield(*args, **kwargs)
