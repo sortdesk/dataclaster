@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from xml_mixin import XMLMixin, Config, XMLConfig, fieldwrapper
 
 
-class TestXMLMixin(unittest.TestCase):
+class TestXMLMixinWithFlatDocument(unittest.TestCase):
 
     def setUp(self) -> None:
         @dataclass
@@ -61,6 +61,51 @@ class TestXMLMixin(unittest.TestCase):
         ])
 
         self.assertTrue(all_attributes_match)
+
+
+class TestXMLMixinWithNestedDocument(unittest.TestCase):
+    def setUp(self) -> None:
+        @dataclass
+        class FoodItem(XMLMixin):
+            name: str = fieldwrapper(config=XMLConfig(xpath="./name"))
+            ppu: float = fieldwrapper(config=XMLConfig(xpath="./ppu"))
+            regular_batter: str = fieldwrapper(config=XMLConfig(xpath="./batters/batter[@id='1001']"))
+            chocolate_batter: str = fieldwrapper(config=XMLConfig(xpath="./batters/batter[@id='1002']"))
+            blueberry_batter: str = fieldwrapper(config=XMLConfig(xpath="./batters/batter[@id='1003']"))
+            no_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5001']"))
+            glazed_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5002']"))
+            sugar_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5005']"))
+            sprinkles_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5006']"))
+            chocolate_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5003']"))
+            maple_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5004']"))
+
+        self.FoodItem = FoodItem
+        self.fooditem_tree = ET.parse("./tests/data/nested_document.xml")
+
+    def test_nested_elements_are_found(self):
+        fooditem_dc = self.FoodItem.from_xml(self.fooditem_tree)
+
+        all_nested_elements_match = all([
+            self.fooditem_tree.findtext("./batters/batter[@id='1001']") == fooditem_dc.regular_batter,
+            self.fooditem_tree.findtext("./batters/batter[@id='1002']") == fooditem_dc.chocolate_batter,
+            self.fooditem_tree.findtext("./batters/batter[@id='1003']") == fooditem_dc.blueberry_batter,
+        ])
+
+        self.assertTrue(all_nested_elements_match)
+
+    def test_elements_are_found_by_attribute(self):
+        fooditem_dc = self.FoodItem.from_xml(self.fooditem_tree)
+
+        all_attrib_elements_match = all([
+            self.fooditem_tree.findtext("./topping[@id='5001']") == fooditem_dc.no_topping,
+            self.fooditem_tree.findtext("./topping[@id='5002']") == fooditem_dc.glazed_topping,
+            self.fooditem_tree.findtext("./topping[@id='5005']") == fooditem_dc.sugar_topping,
+            self.fooditem_tree.findtext("./topping[@id='5006']") == fooditem_dc.sprinkles_topping,
+            self.fooditem_tree.findtext("./topping[@id='5003']") == fooditem_dc.chocolate_topping,
+            self.fooditem_tree.findtext("./topping[@id='5004']") == fooditem_dc.maple_topping,
+        ])
+
+        self.assertTrue(all_attrib_elements_match)
 
 
 class TestFieldConfig(unittest.TestCase):
