@@ -2,6 +2,7 @@ import unittest
 
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+from datetime import datetime
 
 
 from xml_mixin import XMLMixin, Config, XMLConfig, fieldwrapper
@@ -62,6 +63,9 @@ class TestXMLMixinWithFlatDocument(unittest.TestCase):
 
         self.assertTrue(all_attributes_match)
 
+    def test_field_without_config(self):
+        pass  # TODO
+
 
 class TestXMLMixinWithNestedDocument(unittest.TestCase):
     def setUp(self) -> None:
@@ -112,13 +116,15 @@ class TestFieldConfig(unittest.TestCase):
 
     def setUp(self) -> None:
         @dataclass
-        class FoodItem(XMLMixin):
+        class Biscuit(XMLMixin):
             name: str = fieldwrapper(config=XMLConfig(xpath="./name"))
-            ppu: float = fieldwrapper(config=XMLConfig(xpath="./ppu"))
-            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter[@id='1001']"))
+            weight: float = fieldwrapper(config=XMLConfig(xpath="./weight"))
+            baked_on: datetime = fieldwrapper(config=XMLConfig(xpath="./baked_on"))
+            is_delicious: bool = fieldwrapper(config=XMLConfig(xpath="./is_delicious"))
+            rating: int = fieldwrapper(config=XMLConfig(xpath="./rating"))
 
-        self.FoodItem = FoodItem
-        self.fooditem_tree = ET.parse("./tests/data/nested_document.xml")
+        self.Biscuit = Biscuit
+        self.biscuit_tree = ET.parse("./tests/data/datatype_document.xml")
 
     def test_fieldwrapper_preserves_metadata(self):
         config = Config()
@@ -142,13 +148,23 @@ class TestFieldConfig(unittest.TestCase):
 
         self.assertTrue(isinstance(something.__dataclass_fields__["name"].metadata["_config"], Config))
 
-    def test_datatype_casting(self):
-        fooditem_dc = self.FoodItem.from_xml(self.fooditem_tree)
+    def test_datatype_casting_for_simple_types(self):
+        biscuit_dc = self.Biscuit.from_xml(self.biscuit_tree)
 
         all_types_are_correct = all([
-            type(fooditem_dc.name) == str,
-            type(fooditem_dc.ppu) == float,
-            type(fooditem_dc.batters) == list,
+            type(biscuit_dc.name) == str,
+            type(biscuit_dc.weight) == float,
+            type(biscuit_dc.rating) == int,
+        ])
+
+        self.assertTrue(all_types_are_correct)
+
+    def test_datatype_casting_for_special_types(self):
+        biscuit_dc = self.Biscuit.from_xml(self.biscuit_tree)
+
+        all_types_are_correct = all([
+            type(biscuit_dc.baked_on) == datetime,
+            type(biscuit_dc.is_delicious) == bool,
         ])
 
         self.assertTrue(all_types_are_correct)
