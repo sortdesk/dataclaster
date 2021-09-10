@@ -110,6 +110,16 @@ class TestXMLMixinWithNestedDocument(unittest.TestCase):
 
 class TestFieldConfig(unittest.TestCase):
 
+    def setUp(self) -> None:
+        @dataclass
+        class FoodItem(XMLMixin):
+            name: str = fieldwrapper(config=XMLConfig(xpath="./name"))
+            ppu: float = fieldwrapper(config=XMLConfig(xpath="./ppu"))
+            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter[@id='1001']"))
+
+        self.FoodItem = FoodItem
+        self.fooditem_tree = ET.parse("./tests/data/nested_document.xml")
+
     def test_fieldwrapper_preserves_metadata(self):
         config = Config()
 
@@ -131,6 +141,17 @@ class TestFieldConfig(unittest.TestCase):
         something = Something(name="Pierre")
 
         self.assertTrue(isinstance(something.__dataclass_fields__["name"].metadata["_config"], Config))
+
+    def test_datatype_casting(self):
+        fooditem_dc = self.FoodItem.from_xml(self.fooditem_tree)
+
+        all_types_are_correct = all([
+            type(fooditem_dc.name) == str,
+            type(fooditem_dc.ppu) == float,
+            type(fooditem_dc.batters) == list,
+        ])
+
+        self.assertTrue(all_types_are_correct)
 
 
 if __name__ == '__main__':
