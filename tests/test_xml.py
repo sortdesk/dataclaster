@@ -171,19 +171,37 @@ class TestFieldSimpleAndSpecialConfig(unittest.TestCase):
 
 
 class TestFieldComplexConfig(unittest.TestCase):
-    def setUp(self):
+
+    def test_datatype_casting_for_list_type_text(self):
 
         @dataclass
         class Cake(XMLMixin):
-            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters", list_config=XMLConfig(xpath="./batter")))
+            batters: list = fieldwrapper(
+                config=XMLConfig(
+                    xpath="./batters",
+                    list_config=XMLConfig(xpath="./batter")
+                ))
 
-        self.Cake = Cake
-        self.cake_tree = ET.parse("./tests/data/nested_document.xml")
+        cake_tree = ET.parse("./tests/data/nested_document.xml")
+        cake_dc = Cake.from_xml(cake_tree)
 
-    def test_datatype_casting_for_list_type(self):
-        cake_dc = self.Cake.from_xml(self.cake_tree)
+        batters = [batter.text for batter in cake_tree.findall("./batters/batter")]
 
-        batters = [batter.text for batter in self.cake_tree.findall("./batters/batter")]
+        self.assertTrue(cake_dc.batters == batters)
+
+    def test_datatype_casting_for_list_type_attrib(self):
+        @dataclass
+        class Cake(XMLMixin):
+            batters: list = fieldwrapper(
+                config=XMLConfig(
+                    xpath="./batters",
+                    list_config=XMLConfig(xpath="./batter", attrib="id")
+                ))
+
+        cake_tree = ET.parse("./tests/data/nested_document.xml")
+        cake_dc = Cake.from_xml(cake_tree)
+
+        batters = [batter.get("id") for batter in cake_tree.findall("./batters/batter")]
 
         self.assertTrue(cake_dc.batters == batters)
 
