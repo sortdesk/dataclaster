@@ -10,16 +10,17 @@ class Config:
 
 
 class XMLConfig(Config):
-    def __init__(self, xpath, attrib=None) -> None:
+    def __init__(self, xpath, attrib=None, list_config=None) -> None:
         self.xpath = xpath
         self.attrib = attrib
+        self.list_config = list_config
 
 
 class XMLMixin:
     SIMPLE_TYPES = [str, int, float]
     SPECIAL_TYPES = [bool, datetime]
     COMPLEX_TYPES = [list]
-    SUPPORTED_TYPES = SIMPLE_TYPES + SPECIAL_TYPES
+    SUPPORTED_TYPES = SIMPLE_TYPES + SPECIAL_TYPES + COMPLEX_TYPES
 
     @classmethod
     def cast_special_type(self, value, data_type):
@@ -29,21 +30,35 @@ class XMLMixin:
             return parse(value)
 
     @classmethod
-    def cast_complex_type(self, value, data_type):
+    def cast_complex_type(self, field, xml_tree):
+        data_type = field.type
+        element = xml_tree.find(field.config.xpath)
+
         if data_type == list:
-            pass
+            if not field.config.list_config:
+                raise ValueError(f"`list_config` parameter must be provided on field {field.name}.")
+            element
 
     @classmethod
-    def cast_data_type(cls, value, data_type=str):
+    def cast_data_type(cls, field, xml_tree):
+        data_type = field.type
+
         if data_type not in cls.SUPPORTED_TYPES:
             raise NotImplementedError(f"Data type {data_type} is not supported yet.")
 
+        element = xml_tree.find(field.config.xpath)
+
+        if field.config.attrib:
+            text_value = element.get(field.config.attrib)
+        else:
+            text_value = element.text
+
         if data_type in cls.SIMPLE_TYPES:
-            return data_type(value)
+            return data_type(text_value)
         elif data_type in cls.SPECIAL_TYPES:
-            return cls.cast_special_type(value, data_type)
+            return cls.cast_special_type(text_value, data_type)
         elif data_type in cls.COMPLEX_TYPES:
-            return cls.cast_complex_type(value, data_type)
+            return cls.cast_complex_type(field, xml_tree)
 
     @classmethod
     def process_field(cls, field, xml_tree):
@@ -56,14 +71,7 @@ class XMLMixin:
 
     @classmethod
     def process_field_with_config(cls, field, xml_tree):
-        element = xml_tree.find(field.config.xpath)
-
-        if field.config.attrib:
-            attrib_text = element.get(field.config.attrib)
-            return cls.cast_data_type(attrib_text, field.type)
-        else:
-            element_text = element.text
-            return cls.cast_data_type(element_text, field.type)
+        return cls.cast_data_type(field, xml_tree)
 
     @classmethod
     def process_field_without_config(cls, field, xml_tree):

@@ -112,7 +112,7 @@ class TestXMLMixinWithNestedDocument(unittest.TestCase):
         self.assertTrue(all_attrib_elements_match)
 
 
-class TestFieldConfig(unittest.TestCase):
+class TestFieldSimpleAndSpecialConfig(unittest.TestCase):
 
     def setUp(self) -> None:
         @dataclass
@@ -168,6 +168,24 @@ class TestFieldConfig(unittest.TestCase):
         ])
 
         self.assertTrue(all_types_are_correct)
+
+
+class TestFieldComplexConfig(unittest.TestCase):
+    def setUp(self):
+
+        @dataclass
+        class Cake(XMLMixin):
+            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters", list_config=XMLConfig(xpath="./batter")))
+
+        self.Cake = Cake
+        self.cake_tree = ET.parse("./tests/data/nested_document.xml")
+
+    def test_datatype_casting_for_list_type(self):
+        cake_dc = self.Cake.from_xml(self.cake_tree)
+
+        batters = [batter.text for batter in self.cake_tree.findall("./batters/batter")]
+
+        self.assertTrue(cake_dc.batters == batters)
 
 
 if __name__ == '__main__':
