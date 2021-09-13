@@ -178,8 +178,8 @@ class TestFieldComplexConfig(unittest.TestCase):
         class Cake(XMLMixin):
             batters: list = fieldwrapper(
                 config=XMLConfig(
-                    xpath="./batters",
-                    list_config=XMLConfig(xpath="./batter")
+                    xpath="./batters/batter",
+                    list_config=XMLConfig(xpath=".", data_type=str)
                 ))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
@@ -194,14 +194,14 @@ class TestFieldComplexConfig(unittest.TestCase):
         class Cake(XMLMixin):
             batters: list = fieldwrapper(
                 config=XMLConfig(
-                    xpath="./batters",
-                    list_config=XMLConfig(xpath="./batter", attrib="id")
+                    xpath="./batters/batter",
+                    list_config=XMLConfig(xpath=".", attrib="id", data_type=int)
                 ))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)
 
-        batters = [batter.get("id") for batter in cake_tree.findall("./batters/batter")]
+        batters = [int(batter.get("id")) for batter in cake_tree.findall("./batters/batter")]
 
         self.assertTrue(cake_dc.batters == batters)
 

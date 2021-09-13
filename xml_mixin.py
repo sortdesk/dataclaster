@@ -10,10 +10,13 @@ class Config:
 
 
 class XMLConfig(Config):
-    def __init__(self, xpath, attrib=None, list_config=None) -> None:
+    def __init__(self, xpath, attrib=None, list_config=None, data_type=str) -> None:
         self.xpath = xpath
         self.attrib = attrib
         self.list_config = list_config
+        self.data_type = data_type
+
+# TODO: some better inheritance model and typing for list_config etc.
 
 
 class XMLMixin:
@@ -23,34 +26,33 @@ class XMLMixin:
     SUPPORTED_TYPES = SIMPLE_TYPES + SPECIAL_TYPES + COMPLEX_TYPES
 
     @classmethod
-    def cast_special_type(self, value, data_type):
+    def cast_special_type(cls, value, data_type):
         if data_type == bool:
             return bool(strtobool(value))
         elif data_type == datetime:
             return parse(value)
 
     @classmethod
-    def cast_complex_type(self, field, xml_tree):
-        data_type = field.type
-        element = xml_tree.find(field.config.xpath)
+    def cast_complex_type(cls, config, data_type, xml_tree):
+        elements = xml_tree.findall(config.xpath)
 
         if data_type == list:
-            list_config = field.config.list_config
-            if not list_config:
-                raise ValueError(f"`list_config` parameter must be provided on field {field.name}.")
-            return [child.text for child in element.findall(list_config.xpath)]
+            list_config = config.list_config
+            return [
+                cls.cast_data_type(list_config, list_config.data_type, child)
+                for child in elements
+            ]
 
     @classmethod
-    def cast_data_type(cls, field, xml_tree):
-        data_type = field.type
+    def cast_data_type(cls, config, data_type, xml_tree):
 
         if data_type not in cls.SUPPORTED_TYPES:
             raise NotImplementedError(f"Data type {data_type} is not supported yet.")
 
-        element = xml_tree.find(field.config.xpath)
+        element = xml_tree.find(config.xpath)
 
-        if field.config.attrib:
-            text_value = element.get(field.config.attrib)
+        if config.attrib:
+            text_value = element.get(config.attrib)
         else:
             text_value = element.text
 
@@ -59,20 +61,24 @@ class XMLMixin:
         elif data_type in cls.SPECIAL_TYPES:
             return cls.cast_special_type(text_value, data_type)
         elif data_type in cls.COMPLEX_TYPES:
-            return cls.cast_complex_type(field, xml_tree)
+            return cls.cast_complex_type(config, data_type, xml_tree)
 
     @classmethod
     def process_field(cls, field, xml_tree):
         if hasattr(field, "config"):
             if not isinstance(field.config, XMLConfig):
-                raise ValueError("You must pass a valid instance of XMLConfig to the `config` parameter.")
-            return cls.process_field_with_config(field, xml_tree)
+                raise ValueError(
+                    f"You must pass a valid instance of XMLConfig to the `config` parameter on {field.name}"
+                )
+            # TODO: validation of data_type + config should probably happen here
+
+            return cls.process_field_with_config(field.config, field.type, xml_tree)
         else:
             return cls.process_field_without_config(field, xml_tree)
 
     @classmethod
-    def process_field_with_config(cls, field, xml_tree):
-        return cls.cast_data_type(field, xml_tree)
+    def process_field_with_config(cls, config, data_type, xml_tree):
+        return cls.cast_data_type(config, data_type, xml_tree)
 
     @classmethod
     def process_field_without_config(cls, field, xml_tree):
