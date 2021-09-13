@@ -35,9 +35,10 @@ class XMLMixin:
         element = xml_tree.find(field.config.xpath)
 
         if data_type == list:
-            if not field.config.list_config:
+            list_config = field.config.list_config
+            if not list_config:
                 raise ValueError(f"`list_config` parameter must be provided on field {field.name}.")
-            element
+            return [child.text for child in element.findall(list_config.xpath)]
 
     @classmethod
     def cast_data_type(cls, field, xml_tree):
