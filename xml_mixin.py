@@ -30,9 +30,16 @@ class XMLMixin:
             return parse(value)
 
     @classmethod
-    def get_text_value(cls, xml_tree, config):
-        element = xml_tree.find(config.xpath)
+    def get_text_values(cls, elements, config):
+        text_values = []
 
+        for element in elements:
+            text_values.append(cls.get_text_value(element, config))
+
+        return text_values
+
+    @classmethod
+    def get_text_value(cls, element, config):
         if config.attrib:
             return element.get(config.attrib)
         else:
@@ -44,16 +51,23 @@ class XMLMixin:
         if data_type not in cls.SUPPORTED_TYPES:
             raise NotImplementedError(f"Data type {data_type} is not supported yet.")
 
+        # TODO: optimize conditionals below
+
         if data_type in cls.SIMPLE_TYPES:
-            text_value = cls.get_text_value(xml_tree, config)
+            element = xml_tree.find(config.xpath)
+            text_value = cls.get_text_value(element, config)
             return data_type(text_value)
 
         elif data_type in cls.SPECIAL_TYPES:
-            text_value = cls.get_text_value(xml_tree, config)
+            element = xml_tree.find(config.xpath)
+            text_value = cls.get_text_value(element, config)
             return cls.cast_special_type(text_value, data_type)
 
         elif data_type in cls.COMPLEX_TYPES:
-            raise NotImplementedError("Complex types are WIP.")
+            if data_type == list:
+                elements = xml_tree.findall(config.xpath)
+                return cls.get_text_values(elements, config)
+                # TODO: add parameter for casting the type of the elements in the list
 
     @classmethod
     def process_field(cls, field, xml_tree):
