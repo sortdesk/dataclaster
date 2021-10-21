@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from datetime import datetime
 
 
-from xml_mixin import XMLMixin, Config, XMLConfig, fieldwrapper
+from common import fieldwrapper
+from xml_mixin import XMLMixin, Config, XMLConfig
 
 
 class TestXMLMixinWithFlatDocument(unittest.TestCase):

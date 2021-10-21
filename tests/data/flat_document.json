@@ -1,0 +1,7 @@
+{
+    "recipient": "John Doe",
+    "sender": "Jane Doe",
+    "heading": "Reminder",
+    "body": "Don't forget me this weekend!",
+    "priority": 1
+}
