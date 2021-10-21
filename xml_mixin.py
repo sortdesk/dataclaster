@@ -1,6 +1,7 @@
 from dataclasses import fields, Field, MISSING
 from datetime import datetime
 from distutils.util import strtobool
+import typing
 
 from dateutil.parser import parse
 
@@ -47,27 +48,33 @@ class XMLMixin:
 
     @classmethod
     def cast_data_type(cls, config, data_type, xml_tree):
+        base_type = typing.get_origin(data_type) or data_type  # handle e.g. list[str]
 
-        if data_type not in cls.SUPPORTED_TYPES:
-            raise NotImplementedError(f"Data type {data_type} is not supported yet.")
+        if base_type not in cls.SUPPORTED_TYPES:
+            raise NotImplementedError(f"Data type {base_type} is not supported yet.")
 
         # TODO: optimize conditionals below
 
-        if data_type in cls.SIMPLE_TYPES:
+        if base_type in cls.SIMPLE_TYPES:
             element = xml_tree.find(config.xpath)
             text_value = cls.get_text_value(element, config)
-            return data_type(text_value)
+            return base_type(text_value)
 
-        elif data_type in cls.SPECIAL_TYPES:
+        if base_type in cls.SPECIAL_TYPES:
             element = xml_tree.find(config.xpath)
             text_value = cls.get_text_value(element, config)
-            return cls.cast_special_type(text_value, data_type)
+            return cls.cast_special_type(text_value, base_type)
 
-        elif data_type in cls.COMPLEX_TYPES:
-            if data_type == list:
+        if base_type in cls.COMPLEX_TYPES:
+            if base_type == list:
+                element_type = typing.get_args(data_type)[0] if typing.get_args(data_type) else str
+
                 elements = xml_tree.findall(config.xpath)
-                return cls.get_text_values(elements, config)
-                # TODO: add parameter for casting the type of the elements in the list
+                text_values = cls.get_text_values(elements, config)
+
+                cast_fn = cls.cast_special_type if element_type in cls.SPECIAL_TYPES else element_type
+
+                return [cast_fn(text_value) for text_value in text_values]
 
     @classmethod
     def process_field(cls, field, xml_tree):

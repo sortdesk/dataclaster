@@ -28,7 +28,6 @@ class TestXMLMixinWithFlatDocument(unittest.TestCase):
             self.fail(e)
 
     def test_from_xml(self):
-
         try:
             self.Note.from_xml(self.note_tree)
         except Exception as e:
@@ -173,7 +172,6 @@ class TestFieldSimpleAndSpecialConfig(unittest.TestCase):
 class TestFieldComplexConfig(unittest.TestCase):
 
     def test_datatype_casting_for_list_type_text(self):
-
         @dataclass
         class Cake(XMLMixin):
             batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter"))
@@ -197,11 +195,10 @@ class TestFieldComplexConfig(unittest.TestCase):
 
         self.assertTrue(cake_dc.batters == batters)
 
-    def test_datatype_casting_for_list_type_attrib_with_element_type(self):
-
+    def test_datatype_casting_for_list_type_attrib_with_simple_element_type(self):
         @dataclass
         class Cake(XMLMixin):
-            batters: list[int] = fieldwrapper(config=XMLConfig(xpath="./batters/batter"))
+            batters: list[int] = fieldwrapper(config=XMLConfig(xpath="./batters/batter", attrib="id"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)
