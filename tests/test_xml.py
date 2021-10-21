@@ -185,17 +185,17 @@ class TestFieldComplexConfig(unittest.TestCase):
 
         self.assertTrue(cake_dc.batters == batters)
 
-    def test_datatype_casting_for_list_type_attrib(self):
-        @dataclass
-        class Cake(XMLMixin):
-            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter"))
+    # def test_datatype_casting_for_list_type_attrib(self):
+    #     @dataclass
+    #     class Cake(XMLMixin):
+    #         batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter"))
 
-        cake_tree = ET.parse("./tests/data/nested_document.xml")
-        cake_dc = Cake.from_xml(cake_tree)
+    #     cake_tree = ET.parse("./tests/data/nested_document.xml")
+    #     cake_dc = Cake.from_xml(cake_tree)
 
-        batters = [int(batter.get("id")) for batter in cake_tree.findall("./batters/batter")]
+    #     batters = [int(batter.get("id")) for batter in cake_tree.findall("./batters/batter")]
 
-        self.assertTrue(cake_dc.batters == batters)
+    #     self.assertTrue(cake_dc.batters == batters)
 
 
 if __name__ == '__main__':

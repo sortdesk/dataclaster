@@ -30,24 +30,28 @@ class XMLMixin:
             return parse(value)
 
     @classmethod
+    def get_text_value(cls, xml_tree, config):
+        element = xml_tree.find(config.xpath)
+
+        if config.attrib:
+            return element.get(config.attrib)
+        else:
+            return element.text
+
+    @classmethod
     def cast_data_type(cls, config, data_type, xml_tree):
 
         if data_type not in cls.SUPPORTED_TYPES:
             raise NotImplementedError(f"Data type {data_type} is not supported yet.")
 
-        # TODO: add condition here if list type (and dict later?)
-
-        element = xml_tree.find(config.xpath)
-
-        if config.attrib:
-            text_value = element.get(config.attrib)
-        else:
-            text_value = element.text
-
         if data_type in cls.SIMPLE_TYPES:
+            text_value = cls.get_text_value(xml_tree, config)
             return data_type(text_value)
+
         elif data_type in cls.SPECIAL_TYPES:
+            text_value = cls.get_text_value(xml_tree, config)
             return cls.cast_special_type(text_value, data_type)
+
         elif data_type in cls.COMPLEX_TYPES:
             raise NotImplementedError("Complex types are WIP.")
 
