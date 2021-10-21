@@ -10,13 +10,10 @@ class Config:
 
 
 class XMLConfig(Config):
-    def __init__(self, xpath, attrib=None, list_config=None, data_type=str) -> None:
+    def __init__(self, xpath, attrib=None, data_type=str) -> None:
         self.xpath = xpath
         self.attrib = attrib
-        self.list_config = list_config
         self.data_type = data_type
-
-# TODO: some better inheritance model and typing for list_config etc.
 
 
 class XMLMixin:
@@ -33,21 +30,12 @@ class XMLMixin:
             return parse(value)
 
     @classmethod
-    def cast_complex_type(cls, config, data_type, xml_tree):
-        elements = xml_tree.findall(config.xpath)
-
-        if data_type == list:
-            list_config = config.list_config
-            return [
-                cls.cast_data_type(list_config, list_config.data_type, child)
-                for child in elements
-            ]
-
-    @classmethod
     def cast_data_type(cls, config, data_type, xml_tree):
 
         if data_type not in cls.SUPPORTED_TYPES:
             raise NotImplementedError(f"Data type {data_type} is not supported yet.")
+
+        # TODO: add condition here if list type (and dict later?)
 
         element = xml_tree.find(config.xpath)
 
@@ -61,7 +49,7 @@ class XMLMixin:
         elif data_type in cls.SPECIAL_TYPES:
             return cls.cast_special_type(text_value, data_type)
         elif data_type in cls.COMPLEX_TYPES:
-            return cls.cast_complex_type(config, data_type, xml_tree)
+            raise NotImplementedError("Complex types are WIP.")
 
     @classmethod
     def process_field(cls, field, xml_tree):

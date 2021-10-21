@@ -176,11 +176,7 @@ class TestFieldComplexConfig(unittest.TestCase):
 
         @dataclass
         class Cake(XMLMixin):
-            batters: list = fieldwrapper(
-                config=XMLConfig(
-                    xpath="./batters/batter",
-                    list_config=XMLConfig(xpath=".", data_type=str)
-                ))
+            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)
@@ -192,11 +188,7 @@ class TestFieldComplexConfig(unittest.TestCase):
     def test_datatype_casting_for_list_type_attrib(self):
         @dataclass
         class Cake(XMLMixin):
-            batters: list = fieldwrapper(
-                config=XMLConfig(
-                    xpath="./batters/batter",
-                    list_config=XMLConfig(xpath=".", attrib="id", data_type=int)
-                ))
+            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)
