@@ -7,9 +7,11 @@ class JSONMixin(BaseMixin):
 
     @classmethod
     def process_field(cls, field, json_dict):
+
+        cls.raise_for_types_not_supported(field.type)
+
         value = json_dict[field.name]
-        data_type = field.type
-        return cls.cast_value_to_type(value, data_type)
+        return cls.cast_value_to_type(value, field.type)
 
     @classmethod
     def from_dict(cls, json_dict):
