@@ -1,5 +1,6 @@
 import unittest
 
+from datetime import datetime
 import json
 from dataclasses import dataclass
 
@@ -15,6 +16,7 @@ class TestJSONMixinWithFlatDocument(unittest.TestCase):
             heading: str
             body: str
             priority: int
+            created_on: datetime
 
         self.Note = Note
         with open("./tests/data/flat_document.json") as json_file:
@@ -44,3 +46,31 @@ class TestJSONMixinWithFlatDocument(unittest.TestCase):
         ])
 
         self.assertTrue(all_properties_match)
+
+
+class TestJSONMixinDataTypes(unittest.TestCase):
+    def setUp(self) -> None:
+        @dataclass
+        class Note(JSONMixin):
+            recipient: str
+            sender: str
+            heading: str
+            body: str
+            priority: int
+            created_on: datetime
+
+        self.Note = Note
+        with open("./tests/data/flat_document.json") as json_file:
+            self.note_dict = json.load(json_file)
+
+    def test_datetime(self):
+        note_dc = self.Note.from_dict(self.note_dict)
+
+        self.assertIsInstance(
+            note_dc.created_on,
+            datetime
+        )
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -11,4 +11,7 @@ This project requires at least python3.8. (maybe?)
 - [ ] Reorder methods
 - [ ] Implement some sort of validation of the `Config` objects
 - [ ] For now, only "basic" Python types are supported. Would working with full annotations be useful?
-- [ ] Not sure if the `json` vs `from_dict` terminology is accurate/appropriate
+- [ ] Is type casting properly tested everywhere?
+- [ ] What's the best way of handling types with JSON (standard ones, non-standard ones, "1" crap responses etc.)
+- [ ] Handle nested dataclasses?
+- [ ] DRY some of the methods (e.g. data casting from the mixins)

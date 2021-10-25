@@ -95,6 +95,7 @@ class XMLMixin:
 
     @classmethod
     def process_field_without_config(cls, field, xml_tree):
+        # TODO: this is not casting the type !!
         return xml_tree.findtext(field.name)
 
     @classmethod
