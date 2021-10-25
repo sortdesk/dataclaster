@@ -28,3 +28,7 @@ Basic data flow of the `from_*` functions:
 - Find the field if necessary and extract it as a text value (XML) or its actual value (JSON)
 - Cast the text value using the casting functions
 - Return the value and cast the dataclass
+
+# Decision log
+
+- For the first shot, the mixins will accept raw responses only and deserialize them to python (xml/dict)
