@@ -15,3 +15,16 @@ This project requires at least python3.8. (maybe?)
 - [ ] What's the best way of handling types with JSON (standard ones, non-standard ones, "1" crap responses etc.)
 - [ ] Handle nested dataclasses?
 - [ ] DRY some of the methods (e.g. data casting from the mixins)
+
+# Thoughts on architecture
+
+- Some functionality can be mutualized between the JSON and XML mixins, mainly data casting.
+- There is always a process of checking if a field is "configured" or not
+- The XML processign and JSON processing are very different (it is hard to name the JSON processing, and I am not sure if processing in the XML just using the standard lib it the best way to go)
+
+Basic data flow of the `from_*` functions:
+
+- Check if the field was configured or not (configuration only relates to finding the object, **not** casting)
+- Find the field if necessary and extract it as a text value (XML) or its actual value (JSON)
+- Cast the text value using the casting functions
+- Return the value and cast the dataclass
