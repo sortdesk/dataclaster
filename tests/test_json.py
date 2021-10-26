@@ -4,7 +4,8 @@ from datetime import datetime
 import json
 from dataclasses import dataclass
 
-from json_mixin import JSONMixin
+from json_mixin import JSONMixin, JSONConfig
+from common import fieldwrapper
 
 
 class TestJSONMixinWithFlatDocument(unittest.TestCase):
@@ -80,8 +81,8 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
             type: str
             name: str
             ppu: float
-            rating_average: float
-            rating_count: int
+            rating_count: int = fieldwrapper(config=JSONConfig(path="rating.count"))
+            rating_average: float = fieldwrapper(config=JSONConfig(path="rating.average"))
             # batter_types: list[str]
             # topping_ids: list[int]  # str (json) -> int (dc) casting
 
@@ -92,8 +93,8 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
     def test_one_level_simple_type_nesting(self):
         donut_dc = self.Donut.from_dict(self.donut_dict)
         ratings_are_found = all([
-            float(self.donut_dict["ratings"]["average"]) == donut_dc.rating_average,
-            int(self.donut_dict["ratings"]["count"]) == donut_dc.rating_count
+            float(self.donut_dict["rating"]["average"]) == donut_dc.rating_average,
+            int(self.donut_dict["rating"]["count"]) == donut_dc.rating_count
         ])
         self.assertTrue(ratings_are_found)
 

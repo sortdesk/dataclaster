@@ -1,6 +1,7 @@
 from dataclasses import fields
 
 from common import Config, BaseMixin
+from jsontree import JSONTree
 
 
 class JSONConfig(Config):
@@ -25,8 +26,12 @@ class JSONMixin(BaseMixin):
             return cls.process_field_without_config(field, json_dict)
 
     @classmethod
-    def process_field_with_config(cls):
-        pass
+    def process_field_with_config(cls, field, json_dict):
+
+        json_tree = JSONTree(json_dict)
+        value = json_tree.get_value(field.config.path)
+
+        return cls.cast_value_to_type(value, field.type)
 
     @classmethod
     def process_field_without_config(cls, field, json_dict):

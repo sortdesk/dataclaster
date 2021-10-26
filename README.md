@@ -17,6 +17,7 @@ This project requires at least python3.8. (maybe?)
 - [ ] Add options to skip fields (to the method above?)
 - [ ] Maybe move (most) `classmethod` to being `staticmethod`
 - [ ] The `hasattr(cls, "config")` in mixins check can probably be DRYed
+- [ ] Test `JSONTree`
 
 # Thoughts on architecture
 
