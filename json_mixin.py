@@ -15,6 +15,21 @@ class JSONMixin(BaseMixin):
 
         cls.raise_for_types_not_supported(field.type)
 
+        if hasattr(field, "config"):
+            if not isinstance(field.config, JSONConfig):
+                raise ValueError(
+                    f"You must pass a valid instance of JSONConfig to the `config` parameter on {field.name}"
+                )
+            return cls.process_field_with_config(field, json_dict)
+        else:
+            return cls.process_field_without_config(field, json_dict)
+
+    @classmethod
+    def process_field_with_config(cls):
+        pass
+
+    @classmethod
+    def process_field_without_config(cls, field, json_dict):
         value = json_dict[field.name]
         return cls.cast_value_to_type(value, field.type)
 

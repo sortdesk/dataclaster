@@ -13,8 +13,10 @@ This project requires at least python3.8. (maybe?)
 - [ ] Is type casting properly tested everywhere?
 - [ ] What's the best way of handling types with JSON (standard ones, non-standard ones, "1" crap responses etc.)
 - [ ] Handle nested dataclasses?
-- Add a method for getting only the attributes needed for instatiating a dataclass
-- Add options to skip fields (to the method above?)
+- [ ] Add a method for getting only the attributes needed for instatiating a dataclass
+- [ ] Add options to skip fields (to the method above?)
+- [ ] Maybe move (most) `classmethod` to being `staticmethod`
+- [ ] The `hasattr(cls, "config")` in mixins check can probably be DRYed
 
 # Thoughts on architecture
 
