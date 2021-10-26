@@ -1,6 +1,6 @@
 from dataclasses import fields
 
-from base_mixin import BaseMixin
+from common import BaseMixin
 
 
 class JSONMixin(BaseMixin):

@@ -1,10 +1,6 @@
 from dataclasses import fields
 
-from base_mixin import BaseMixin
-
-
-class Config:
-    pass
+from common import Config, BaseMixin
 
 
 class XMLConfig(Config):
