@@ -1,6 +1,11 @@
 from dataclasses import fields
 
-from common import BaseMixin
+from common import Config, BaseMixin
+
+
+class JSONConfig(Config):
+    def __init__(self, path: str) -> None:
+        self.path = path
 
 
 class JSONMixin(BaseMixin):

@@ -4,10 +4,9 @@ from common import Config, BaseMixin
 
 
 class XMLConfig(Config):
-    def __init__(self, xpath, attrib=None, data_type=str) -> None:
+    def __init__(self, xpath, attrib=None) -> None:
         self.xpath = xpath
         self.attrib = attrib
-        self.data_type = data_type
 
 
 class XMLMixin(BaseMixin):
