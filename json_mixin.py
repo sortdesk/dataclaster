@@ -1,7 +1,9 @@
 from dataclasses import fields
 
+import jsonpath_rw
+
 from common import Config, BaseMixin
-from jsontree import JSONTree
+from exceptions import TooManyMatchesError, NoMatchesError
 
 
 class JSONConfig(Config):
@@ -27,9 +29,24 @@ class JSONMixin(BaseMixin):
 
     @classmethod
     def process_field_with_config(cls, field, json_dict):
+        expr = jsonpath_rw.parse(field.config.path)
+        value = [match.value for match in expr.find(json_dict)]
 
-        json_tree = JSONTree(json_dict)
-        value = json_tree.get_value(field.config.path)
+        if not value:
+            raise NoMatchesError(
+                f"Couldn't find any matches for the path '{field.config.path}' of field {field.name}"
+            )
+
+        is_list = cls.get_base_type(field.type) == list
+        has_several_matches = len(value) > 1
+
+        if not is_list:
+            if has_several_matches:
+                raise TooManyMatchesError(
+                    f"{field.name} or type {field.type} has too many matches for the path '{field.config.path}'"
+                )
+            else:
+                value = value[0]
 
         return cls.cast_value_to_type(value, field.type)
 

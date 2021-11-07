@@ -82,7 +82,7 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
             name: str
             ppu: float
             tags: list[str]
-            # batter_types: list[str]
+            batter_types: list[str] = fieldwrapper(config=JSONConfig(path="batters[*].type"))
             # topping_ids: list[int]  # str (json) -> int (dc) casting
             rating_count: int = fieldwrapper(config=JSONConfig(path="rating.count"))
             rating_average: float = fieldwrapper(config=JSONConfig(path="rating.average"))
@@ -104,6 +104,14 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
         self.assertEqual(
             self.donut_dict["tags"],
             donut_dc.tags
+        )
+
+    def test_one_level_complex_type_nesting_with_dict_value(self):
+        donut_dc = self.Donut.from_dict(self.donut_dict)
+
+        self.assertEqual(
+            [batter["type"] for batter in self.donut_dict["batters"]],
+            donut_dc.batter_types
         )
 
 
