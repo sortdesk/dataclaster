@@ -1,6 +1,6 @@
 import unittest
 
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 from dataclasses import dataclass
 from datetime import datetime
 
