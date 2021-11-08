@@ -3,28 +3,28 @@ from exceptions import TooManyMatchesError
 
 
 class XMLConfig(Config):
-    def __init__(self, xpath, attrib=None) -> None:
+    def __init__(self, xpath) -> None:
         self.xpath = xpath
-        self.attrib = attrib
 
 
 class XMLMixin(BaseMixin):
 
     @classmethod
-    def get_text_values(cls, elements, config):
+    def get_text_values(cls, elements):
         text_values = []
 
         for element in elements:
-            text_values.append(cls.get_text_value(element, config))
+            text_values.append(cls.get_text_value(element))
 
         return text_values
 
     @classmethod
-    def get_text_value(cls, element, config):
-        if config.attrib:
-            return element.get(config.attrib)
-        else:
+    def get_text_value(cls, element):
+        # TODO: following lines are very messy
+        try:
             return element.text
+        except Exception:
+            return str(element)
 
     @classmethod
     def process_field(cls, field, xml_tree):
@@ -47,12 +47,12 @@ class XMLMixin(BaseMixin):
 
         elements = xml_tree.xpath(config.xpath)
         if base_type == list:
-            value = cls.get_text_values(elements, config)
+            value = cls.get_text_values(elements)
         else:
             if len(elements) > 1:
                 # TODO: improve message + maybe DRY this check with JSON mixin
                 raise TooManyMatchesError(f"There are two many matches for {field.name}.")
-            value = cls.get_text_value(elements[0], config)
+            value = cls.get_text_value(elements[0])
 
         return cls.cast_value_to_type(value, field.type)
 

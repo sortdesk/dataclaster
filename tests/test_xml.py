@@ -49,9 +49,9 @@ class TestXMLMixinWithFlatDocument(unittest.TestCase):
     def test_from_xml_attributes(self):
         @dataclass
         class NoteWithAttributes(self.Note):
-            recipient_gender: str = fieldwrapper(config=XMLConfig(xpath="./recipient", attrib="gender"))
-            sender_gender: str = fieldwrapper(config=XMLConfig(xpath="./sender", attrib="gender"))
-            body_lang: str = fieldwrapper(config=XMLConfig(xpath="./body", attrib="lang"))
+            recipient_gender: str = fieldwrapper(config=XMLConfig(xpath="./recipient/@gender"))
+            sender_gender: str = fieldwrapper(config=XMLConfig(xpath="./sender/@gender"))
+            body_lang: str = fieldwrapper(config=XMLConfig(xpath="./body/@lang"))
 
         note_dc = NoteWithAttributes.from_xml(self.note_tree)
 
@@ -187,7 +187,7 @@ class TestFieldComplexConfig(unittest.TestCase):
     def test_datatype_casting_for_list_type_attrib(self):
         @dataclass
         class Cake(XMLMixin):
-            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter", attrib="id"))
+            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter/@id"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)
@@ -199,7 +199,7 @@ class TestFieldComplexConfig(unittest.TestCase):
     def test_datatype_casting_for_list_type_attrib_with_simple_element_type(self):
         @dataclass
         class Cake(XMLMixin):
-            batters: list[int] = fieldwrapper(config=XMLConfig(xpath="./batters/batter", attrib="id"))
+            batters: list[int] = fieldwrapper(config=XMLConfig(xpath="./batters/batter/@id"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)

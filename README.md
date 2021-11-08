@@ -17,6 +17,9 @@ This project requires at least python3.8. (maybe?)
 - [ ] Add options to skip fields (to the method above?)
 - [ ] Maybe move (most) `classmethod` to being `staticmethod`
 - [ ] The `hasattr(cls, "config")` in mixins check can probably be DRYed
+- [ ] Test exceptions like `TooManyErrors`
+- [ ] Be careful with the whole lxml xpath support like using `text()` (breaks things)
+- [ ] Warnings for no match found
 
 # Thoughts on architecture
 
