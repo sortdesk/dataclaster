@@ -1,5 +1,3 @@
-from dataclasses import fields
-
 import jsonpath_rw
 
 from common import Config, BaseMixin
@@ -45,8 +43,7 @@ class JSONMixin(BaseMixin):
                 raise TooManyMatchesError(
                     f"{field.name} or type {field.type} has too many matches for the path '{field.config.path}'"
                 )
-            else:
-                value = value[0]
+            value = value[0]
 
         return cls.cast_value_to_type(value, field.type)
 
@@ -57,5 +54,5 @@ class JSONMixin(BaseMixin):
 
     @classmethod
     def from_dict(cls, json_dict):
-        dc = cls(**{field.name: cls.process_field(field, json_dict) for field in fields(cls)})
+        dc = cls.to_dataclass(json_dict)
         return dc

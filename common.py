@@ -1,8 +1,8 @@
-from dateutil.parser import parse
-from distutils.util import strtobool
+from dataclasses import Field, fields, MISSING
 from datetime import datetime
+from distutils.util import strtobool
 import typing
-from dataclasses import Field, MISSING
+from dateutil.parser import parse
 
 
 class Config:
@@ -77,3 +77,8 @@ class BaseMixin:
             return [cls.cast_value_to_type(element, element_type) for element in value]
 
         raise NotImplementedError()
+
+    @classmethod
+    def to_dataclass(cls, raw_data):
+        dc = cls(**{field.name: cls.process_field(field, raw_data) for field in fields(cls)})
+        return dc

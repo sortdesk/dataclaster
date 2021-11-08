@@ -1,5 +1,3 @@
-from dataclasses import fields
-
 from common import Config, BaseMixin
 
 
@@ -62,5 +60,5 @@ class XMLMixin(BaseMixin):
 
     @classmethod
     def from_xml(cls, xml_tree):
-        dc = cls(**{field.name: cls.process_field(field, xml_tree) for field in fields(cls)})
+        dc = cls.to_dataclass(xml_tree)
         return dc

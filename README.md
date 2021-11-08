@@ -17,13 +17,12 @@ This project requires at least python3.8. (maybe?)
 - [ ] Add options to skip fields (to the method above?)
 - [ ] Maybe move (most) `classmethod` to being `staticmethod`
 - [ ] The `hasattr(cls, "config")` in mixins check can probably be DRYed
-- [ ] Test `JSONTree`
 
 # Thoughts on architecture
 
 - Some functionality can be mutualized between the JSON and XML mixins, mainly data casting.
 - There is always a process of checking if a field is "configured" or not
-- The XML processign and JSON processing are very different (it is hard to name the JSON processing, and I am not sure if processing in the XML just using the standard lib it the best way to go)
+- The XML processing and JSON processing are very different (it is hard to name the JSON processing, and I am not sure if processing in the XML just using the standard lib it the best way to go)
 
 Basic data flow of the `from_*` functions:
 
