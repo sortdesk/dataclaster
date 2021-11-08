@@ -1,4 +1,5 @@
 from common import Config, BaseMixin
+from exceptions import TooManyMatchesError
 
 
 class XMLConfig(Config):
@@ -44,12 +45,14 @@ class XMLMixin(BaseMixin):
         base_type = cls.get_base_type(field.type)
         config = field.config
 
+        elements = xml_tree.xpath(config.xpath)
         if base_type == list:
-            elements = xml_tree.findall(config.xpath)
             value = cls.get_text_values(elements, config)
         else:
-            element = xml_tree.find(config.xpath)
-            value = cls.get_text_value(element, config)
+            if len(elements) > 1:
+                # TODO: improve message + maybe DRY this check with JSON mixin
+                raise TooManyMatchesError(f"There are two many matches for {field.name}.")
+            value = cls.get_text_value(elements[0], config)
 
         return cls.cast_value_to_type(value, field.type)
 
