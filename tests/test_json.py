@@ -115,6 +115,20 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
         )
 
 
+class TestDeserialization(unittest.TestCase):
+
+    def test_deserialization(self):
+        with open("./tests/data/nested_document.json") as json_string:
+
+            @dataclass
+            class Donut(JSONMixin):
+                id: int
+
+            donut_dc = Donut.from_json(json_string.read())
+            donut_dict = json.load(json_string)
+
+            self.assertTrue(donut_dc.id, donut_dict["id"])
+
 # class TestJSONMixinDecorator(unittest.TestCase):
 #     def test_decorator(self):
 #         @jsonmixin
