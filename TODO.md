@@ -2,11 +2,11 @@ This project requires at least python3.8. (maybe?)
 
 # TODOs
 
-- [ ] Docstrings + type annotations + marking methods as private
 - [x] Type casting
 - [x] Type casting for complex types
-- [ ] Add a license
 - [x] Some functionality needs to be moved to a generic mixin (like data casting)
+- [ ] Docstrings + type annotations + marking methods as private
+- [ ] Add a license
 - [ ] Reorder methods
 - [ ] Implement some sort of validation of the `Config` objects
 - [ ] For now, only "basic" Python types are supported. Would working with full annotations be useful?
@@ -22,6 +22,11 @@ This project requires at least python3.8. (maybe?)
 - [ ] Warnings for no match found
 - [ ] Add a flag to pass in deserialized data directly
 - [ ] Update licenses to properly includes licenses of dependencies
+- [ ] Make the classes available as decorators
+- [ ] Rename `fieldwrapper` to something shorter/better
+- [ ] Expand documentation
+- [ ] Rename/regroup the modules
+- [ ] Package properly to be able to make a Python package out of it
 
 # Thoughts on architecture
 
