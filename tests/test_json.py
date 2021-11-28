@@ -31,12 +31,12 @@ class TestJSONMixinWithFlatDocument(unittest.TestCase):
 
     def test_from_dict(self):
         try:
-            self.Note.from_dict(self.note_dict)
+            self.Note.from_json(self.note_dict)
         except Exception as e:
             self.fail(e)
 
     def test_from_dict_properties(self):
-        note_dc = self.Note.from_dict(self.note_dict)
+        note_dc = self.Note.from_json(self.note_dict)
 
         all_properties_match = all([
             self.note_dict["recipient"] == note_dc.recipient,
@@ -65,7 +65,7 @@ class TestJSONMixinDataTypes(unittest.TestCase):
             self.note_dict = json.load(json_file)
 
     def test_datetime(self):
-        note_dc = self.Note.from_dict(self.note_dict)
+        note_dc = self.Note.from_json(self.note_dict)
 
         self.assertIsInstance(
             note_dc.created_on,
@@ -92,7 +92,7 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
             self.donut_dict = json.load(json_file)
 
     def test_one_level_simple_type_nesting(self):
-        donut_dc = self.Donut.from_dict(self.donut_dict)
+        donut_dc = self.Donut.from_json(self.donut_dict)
         ratings_are_found = all([
             float(self.donut_dict["rating"]["average"]) == donut_dc.rating_average,
             int(self.donut_dict["rating"]["count"]) == donut_dc.rating_count
@@ -100,14 +100,14 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
         self.assertTrue(ratings_are_found)
 
     def test_one_level_complex_type_nesting(self):
-        donut_dc = self.Donut.from_dict(self.donut_dict)
+        donut_dc = self.Donut.from_json(self.donut_dict)
         self.assertEqual(
             self.donut_dict["tags"],
             donut_dc.tags
         )
 
     def test_one_level_complex_type_nesting_with_dict_value(self):
-        donut_dc = self.Donut.from_dict(self.donut_dict)
+        donut_dc = self.Donut.from_json(self.donut_dict)
 
         self.assertEqual(
             [batter["type"] for batter in self.donut_dict["batters"]],

@@ -53,6 +53,6 @@ class JSONMixin(BaseMixin):
         return cls.cast_value_to_type(value, field.type)
 
     @classmethod
-    def from_dict(cls, json_dict):
+    def from_json(cls, json_dict):
         dc = cls.to_dataclass(json_dict)
         return dc
