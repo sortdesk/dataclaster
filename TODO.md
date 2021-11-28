@@ -21,6 +21,7 @@ This project requires at least python3.8. (maybe?)
 - [ ] Be careful with the whole lxml xpath support like using `text()` (breaks things)
 - [ ] Warnings for no match found
 - [ ] Add a flag to pass in deserialized data directly
+- [ ] Update licenses to properly includes licenses of dependencies
 
 # Thoughts on architecture
 
