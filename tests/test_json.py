@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 from dataclasses import dataclass
 
-from json_mixin import JSONMixin, JSONConfig
+from json_mixin import JSONMixin, JSONConfig, jsonmixin
 from common import fieldwrapper
 
 
@@ -113,6 +113,17 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
             [batter["type"] for batter in self.donut_dict["batters"]],
             donut_dc.batter_types
         )
+
+
+class TestJSONMixinDecorator(unittest.TestCase):
+    def test_decorator(self):
+        @dataclass
+        @jsonmixin
+        class Person:
+            first_name: str
+
+        taja = Person(first_name="Taja")
+        self.assertTrue(isinstance(taja, JSONMixin))
 
 
 if __name__ == '__main__':

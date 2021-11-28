@@ -56,3 +56,7 @@ class JSONMixin(BaseMixin):
     def from_dict(cls, json_dict):
         dc = cls.to_dataclass(json_dict)
         return dc
+
+
+def jsonmixin(func):
+    return func
