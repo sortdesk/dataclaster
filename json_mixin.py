@@ -1,3 +1,4 @@
+import json
 import jsonpath_rw
 
 from common import Config, BaseMixin
@@ -53,6 +54,9 @@ class JSONMixin(BaseMixin):
         return cls.cast_value_to_type(value, field.type)
 
     @classmethod
-    def from_json(cls, json_dict, deserialize=True):
+    def from_json(cls, json_dict, deserialize=False):
+        if deserialize:
+            json_dict = json.loads(json_dict)
+
         dc = cls.to_dataclass(json_dict)
         return dc
