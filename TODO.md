@@ -28,6 +28,8 @@ This project requires at least python3.8. (maybe?)
 - [ ] Rename/regroup the modules
 - [ ] Package properly to be able to make a Python package out of it
 - [ ] Move test file paths to constants
+- [ ] Would using abc make for the mixins make sense?
+- [ ] Does the name `mixin` actually make sense?
 
 # Thoughts on architecture
 
