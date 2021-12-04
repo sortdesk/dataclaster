@@ -5,7 +5,7 @@ import json
 from dataclasses import dataclass
 
 from json_mixin import JSONMixin, JSONConfig
-from common import fieldwrapper
+from common import field as dcfield
 
 
 class TestJSONMixinWithFlatDocument(unittest.TestCase):
@@ -82,10 +82,10 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
             name: str
             ppu: float
             tags: list[str]
-            batter_types: list[str] = fieldwrapper(config=JSONConfig(path="batters[*].type"))
+            batter_types: list[str] = dcfield(config=JSONConfig(path="batters[*].type"))
             # topping_ids: list[int]  # str (json) -> int (dc) casting
-            rating_count: int = fieldwrapper(config=JSONConfig(path="rating.count"))
-            rating_average: float = fieldwrapper(config=JSONConfig(path="rating.average"))
+            rating_count: int = dcfield(config=JSONConfig(path="rating.count"))
+            rating_average: float = dcfield(config=JSONConfig(path="rating.average"))
 
         self.Donut = Donut
         with open("./tests/data/nested_document.json") as json_file:

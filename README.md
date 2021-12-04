@@ -78,13 +78,13 @@ The example above can be easily rewritten using dataclaster.
 
 ```python
 from dataclaster.json_mixin import JSONMixin, JSONConfig
-from dataclaster.common import fieldwrapper
+from dataclaster.common import field as dcfield
 
 @dataclass
 class Pastry(JSONMixin):
     category: str
     name: str
-    average_rating: float = fieldwrapper(config=JSONConfig(path="rating.average"))
+    average_rating: float = dcfield(config=JSONConfig(path="rating.average"))
 
 pastry = Pastry.from_json(json_string)
 

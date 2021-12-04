@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 
-from common import fieldwrapper
+from common import field as dcfield
 from xml_mixin import XMLMixin, Config, XMLConfig
 
 
@@ -49,9 +49,9 @@ class TestXMLMixinWithFlatDocument(unittest.TestCase):
     def test_from_xml_attributes(self):
         @dataclass
         class NoteWithAttributes(self.Note):
-            recipient_gender: str = fieldwrapper(config=XMLConfig(xpath="./recipient/@gender"))
-            sender_gender: str = fieldwrapper(config=XMLConfig(xpath="./sender/@gender"))
-            body_lang: str = fieldwrapper(config=XMLConfig(xpath="./body/@lang"))
+            recipient_gender: str = dcfield(config=XMLConfig(xpath="./recipient/@gender"))
+            sender_gender: str = dcfield(config=XMLConfig(xpath="./sender/@gender"))
+            body_lang: str = dcfield(config=XMLConfig(xpath="./body/@lang"))
 
         note_dc = NoteWithAttributes.from_xml(self.note_tree)
 
@@ -71,17 +71,17 @@ class TestXMLMixinWithNestedDocument(unittest.TestCase):
     def setUp(self) -> None:
         @dataclass
         class FoodItem(XMLMixin):
-            name: str = fieldwrapper(config=XMLConfig(xpath="./name"))
-            ppu: float = fieldwrapper(config=XMLConfig(xpath="./ppu"))
-            regular_batter: str = fieldwrapper(config=XMLConfig(xpath="./batters/batter[@id='1001']"))
-            chocolate_batter: str = fieldwrapper(config=XMLConfig(xpath="./batters/batter[@id='1002']"))
-            blueberry_batter: str = fieldwrapper(config=XMLConfig(xpath="./batters/batter[@id='1003']"))
-            no_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5001']"))
-            glazed_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5002']"))
-            sugar_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5005']"))
-            sprinkles_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5006']"))
-            chocolate_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5003']"))
-            maple_topping: str = fieldwrapper(config=XMLConfig(xpath="./topping[@id='5004']"))
+            name: str = dcfield(config=XMLConfig(xpath="./name"))
+            ppu: float = dcfield(config=XMLConfig(xpath="./ppu"))
+            regular_batter: str = dcfield(config=XMLConfig(xpath="./batters/batter[@id='1001']"))
+            chocolate_batter: str = dcfield(config=XMLConfig(xpath="./batters/batter[@id='1002']"))
+            blueberry_batter: str = dcfield(config=XMLConfig(xpath="./batters/batter[@id='1003']"))
+            no_topping: str = dcfield(config=XMLConfig(xpath="./topping[@id='5001']"))
+            glazed_topping: str = dcfield(config=XMLConfig(xpath="./topping[@id='5002']"))
+            sugar_topping: str = dcfield(config=XMLConfig(xpath="./topping[@id='5005']"))
+            sprinkles_topping: str = dcfield(config=XMLConfig(xpath="./topping[@id='5006']"))
+            chocolate_topping: str = dcfield(config=XMLConfig(xpath="./topping[@id='5003']"))
+            maple_topping: str = dcfield(config=XMLConfig(xpath="./topping[@id='5004']"))
 
         self.FoodItem = FoodItem
         self.fooditem_tree = ET.parse("./tests/data/nested_document.xml")
@@ -117,11 +117,11 @@ class TestFieldSimpleAndSpecialConfig(unittest.TestCase):
     def setUp(self) -> None:
         @dataclass
         class Biscuit(XMLMixin):
-            name: str = fieldwrapper(config=XMLConfig(xpath="./name"))
-            weight: float = fieldwrapper(config=XMLConfig(xpath="./weight"))
-            baked_on: datetime = fieldwrapper(config=XMLConfig(xpath="./baked_on"))
-            is_delicious: bool = fieldwrapper(config=XMLConfig(xpath="./is_delicious"))
-            rating: int = fieldwrapper(config=XMLConfig(xpath="./rating"))
+            name: str = dcfield(config=XMLConfig(xpath="./name"))
+            weight: float = dcfield(config=XMLConfig(xpath="./weight"))
+            baked_on: datetime = dcfield(config=XMLConfig(xpath="./baked_on"))
+            is_delicious: bool = dcfield(config=XMLConfig(xpath="./is_delicious"))
+            rating: int = dcfield(config=XMLConfig(xpath="./rating"))
 
         self.Biscuit = Biscuit
         self.biscuit_tree = ET.parse("./tests/data/datatype_document.xml")
@@ -131,7 +131,7 @@ class TestFieldSimpleAndSpecialConfig(unittest.TestCase):
 
         @dataclass
         class Something:
-            name: str = fieldwrapper(config=config, metadata={"hello": "world"})
+            name: str = dcfield(config=config, metadata={"hello": "world"})
 
         something = Something(name="Pierre")
 
@@ -142,7 +142,7 @@ class TestFieldSimpleAndSpecialConfig(unittest.TestCase):
 
         @dataclass
         class Something:
-            name: str = fieldwrapper(config=config, metadata={"hello": "world"})
+            name: str = dcfield(config=config, metadata={"hello": "world"})
 
         something = Something(name="Pierre")
 
@@ -175,7 +175,7 @@ class TestFieldComplexConfig(unittest.TestCase):
     def test_datatype_casting_for_list_type_text(self):
         @dataclass
         class Cake(XMLMixin):
-            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter"))
+            batters: list = dcfield(config=XMLConfig(xpath="./batters/batter"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)
@@ -187,7 +187,7 @@ class TestFieldComplexConfig(unittest.TestCase):
     def test_datatype_casting_for_list_type_attrib(self):
         @dataclass
         class Cake(XMLMixin):
-            batters: list = fieldwrapper(config=XMLConfig(xpath="./batters/batter/@id"))
+            batters: list = dcfield(config=XMLConfig(xpath="./batters/batter/@id"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)
@@ -199,7 +199,7 @@ class TestFieldComplexConfig(unittest.TestCase):
     def test_datatype_casting_for_list_type_attrib_with_simple_element_type(self):
         @dataclass
         class Cake(XMLMixin):
-            batters: list[int] = fieldwrapper(config=XMLConfig(xpath="./batters/batter/@id"))
+            batters: list[int] = dcfield(config=XMLConfig(xpath="./batters/batter/@id"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
         cake_dc = Cake.from_xml(cake_tree)
@@ -215,7 +215,7 @@ class TestDeserialization(unittest.TestCase):
         with open("./tests/data/datatype_document.xml") as xml_file:
             @dataclass
             class Biscuit(XMLMixin):
-                id: str = fieldwrapper(config=XMLConfig(xpath="./@id"))
+                id: str = dcfield(config=XMLConfig(xpath="./@id"))
 
             donut_dc = Biscuit.from_xml(xml_file.read(), deserialize=True)
 
