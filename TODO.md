@@ -27,6 +27,7 @@ This project requires at least python3.8. (maybe?)
 - [ ] Expand documentation
 - [ ] Rename/regroup the modules
 - [ ] Package properly to be able to make a Python package out of it
+- [ ] Move test file paths to constants
 
 # Thoughts on architecture
 

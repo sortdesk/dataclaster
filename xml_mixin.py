@@ -1,3 +1,5 @@
+import lxml.etree as ET
+
 from common import Config, BaseMixin
 from exceptions import TooManyMatchesError
 
@@ -20,7 +22,7 @@ class XMLMixin(BaseMixin):
 
     @classmethod
     def get_text_value(cls, element):
-        # TODO: following lines are very messy
+        # TODO: this try/except is a mess
         try:
             return element.text
         except Exception:
@@ -62,6 +64,9 @@ class XMLMixin(BaseMixin):
         return cls.cast_value_to_type(value, field.type)
 
     @classmethod
-    def from_xml(cls, xml_tree):
+    def from_xml(cls, xml_tree, deserialize=False):
+        if deserialize:
+            xml_tree = ET.fromstring(xml_tree)
+
         dc = cls.to_dataclass(xml_tree)
         return dc

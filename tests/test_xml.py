@@ -209,5 +209,20 @@ class TestFieldComplexConfig(unittest.TestCase):
         self.assertTrue(cake_dc.batters == batters)
 
 
+class TestDeserialization(unittest.TestCase):
+
+    def test_deserialization(self):
+        with open("./tests/data/datatype_document.xml") as xml_file:
+            @dataclass
+            class Biscuit(XMLMixin):
+                id: str = fieldwrapper(config=XMLConfig(xpath="./@id"))
+
+            donut_dc = Biscuit.from_xml(xml_file.read(), deserialize=True)
+
+        tree = ET.parse("./tests/data/datatype_document.xml").getroot()
+
+        self.assertTrue(donut_dc.id, tree.get("id"))
+
+
 if __name__ == '__main__':
     unittest.main()
