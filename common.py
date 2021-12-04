@@ -80,5 +80,5 @@ class BaseMixin:
 
     @classmethod
     def to_dataclass(cls, raw_data):
-        dc = cls(**{field.name: cls.process_field(field, raw_data) for field in fields(cls)})
+        dc = cls(**{field.name: cls._process_field(field, raw_data) for field in fields(cls)})
         return dc

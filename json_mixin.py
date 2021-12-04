@@ -1,3 +1,6 @@
+from dataclasses import field as fieldtype, dataclass
+from typing import Union, Any
+
 import json
 import jsonpath_rw
 
@@ -13,7 +16,7 @@ class JSONConfig(Config):
 class JSONMixin(BaseMixin):
 
     @classmethod
-    def _process_field(cls, field, json_dict):
+    def _process_field(cls, field: fieldtype, json_dict: dict) -> Any:
 
         cls.raise_for_types_not_supported(field.type)
 
@@ -27,7 +30,7 @@ class JSONMixin(BaseMixin):
             return cls._process_field_without_config(field, json_dict)
 
     @classmethod
-    def _process_field_with_config(cls, field, json_dict):
+    def _process_field_with_config(cls, field: fieldtype, json_dict: dict) -> Any:
         expr = jsonpath_rw.parse(field.config.path)
         value = [match.value for match in expr.find(json_dict)]
 
@@ -49,12 +52,12 @@ class JSONMixin(BaseMixin):
         return cls.cast_value_to_type(value, field.type)
 
     @classmethod
-    def _process_field_without_config(cls, field, json_dict):
+    def _process_field_without_config(cls, field: fieldtype, json_dict: dict) -> Any:
         value = json_dict[field.name]
         return cls.cast_value_to_type(value, field.type)
 
     @classmethod
-    def from_json(cls, json_dict, deserialize=False):
+    def from_json(cls, json_dict: Union[str, dict], deserialize: bool = False) -> dataclass:
         if deserialize:
             json_dict = json.loads(json_dict)
 
