@@ -1,18 +1,22 @@
+from dataclasses import field as fieldtype, dataclass
+from typing import List, Any, Union
+
 import lxml.etree as ET
+from lxml.etree import Element
 
 from common import Config, BaseMixin
 from exceptions import TooManyMatchesError
 
 
 class XMLConfig(Config):
-    def __init__(self, xpath) -> None:
+    def __init__(self, xpath: str) -> None:
         self.xpath = xpath
 
 
 class XMLMixin(BaseMixin):
 
     @classmethod
-    def _get_text_values(cls, elements):
+    def _get_text_values(cls, elements: List[Element]) -> List[str]:
         text_values = []
 
         for element in elements:
@@ -21,7 +25,7 @@ class XMLMixin(BaseMixin):
         return text_values
 
     @classmethod
-    def _get_text_value(cls, element):
+    def _get_text_value(cls, element: Element) -> str:
         # TODO: this try/except is a mess
         try:
             return element.text
@@ -29,7 +33,7 @@ class XMLMixin(BaseMixin):
             return str(element)
 
     @classmethod
-    def _process_field(cls, field, xml_tree):
+    def _process_field(cls, field: fieldtype, xml_tree: Element) -> Any:
 
         cls.raise_for_types_not_supported(field.type)
 
@@ -43,7 +47,7 @@ class XMLMixin(BaseMixin):
             return cls._process_field_without_config(field, xml_tree)
 
     @classmethod
-    def _process_field_with_config(cls, field, xml_tree):
+    def _process_field_with_config(cls, field: fieldtype, xml_tree: Element) -> Any:
         base_type = cls.get_base_type(field.type)
         config = field.config
 
@@ -59,12 +63,12 @@ class XMLMixin(BaseMixin):
         return cls.cast_value_to_type(value, field.type)
 
     @classmethod
-    def _process_field_without_config(cls, field, xml_tree):
+    def _process_field_without_config(cls, field: fieldtype, xml_tree: Element) -> Any:
         value = xml_tree.findtext(field.name)
         return cls.cast_value_to_type(value, field.type)
 
     @classmethod
-    def from_xml(cls, xml_tree, deserialize=False):
+    def from_xml(cls, xml_tree: Union[Element, str], deserialize=False) -> dataclass:
         if deserialize:
             xml_tree = ET.fromstring(xml_tree)
 
