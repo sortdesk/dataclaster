@@ -8,6 +8,10 @@ from jsonclasses import JSONCasting, JSONConfig
 from common import field as dcfield
 
 
+FLAT_DOCUMENT_PATH = "./tests/data/flat_document.json"
+NESTED_DOCUMENT_PATH = "./tests/data/nested_document.json"
+
+
 class TestJSONMixinWithFlatDocument(unittest.TestCase):
     def setUp(self) -> None:
         @dataclass
@@ -20,7 +24,7 @@ class TestJSONMixinWithFlatDocument(unittest.TestCase):
             created_on: datetime
 
         self.Note = Note
-        with open("./tests/data/flat_document.json") as json_file:
+        with open(FLAT_DOCUMENT_PATH) as json_file:
             self.note_dict = json.load(json_file)
 
     def test_instantiation(self):
@@ -61,7 +65,7 @@ class TestJSONMixinDataTypes(unittest.TestCase):
             created_on: datetime
 
         self.Note = Note
-        with open("./tests/data/flat_document.json") as json_file:
+        with open(FLAT_DOCUMENT_PATH) as json_file:
             self.note_dict = json.load(json_file)
 
     def test_datetime(self):
@@ -88,7 +92,7 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
             rating_average: float = dcfield(config=JSONConfig(path="rating.average"))
 
         self.Donut = Donut
-        with open("./tests/data/nested_document.json") as json_file:
+        with open(NESTED_DOCUMENT_PATH) as json_file:
             self.donut_dict = json.load(json_file)
 
     def test_one_level_simple_type_nesting(self):
@@ -118,14 +122,14 @@ class TestJSONMixinWithNestedDocument(unittest.TestCase):
 class TestDeserialization(unittest.TestCase):
 
     def test_deserialization(self):
-        with open("./tests/data/nested_document.json") as json_file:
+        with open(NESTED_DOCUMENT_PATH) as json_file:
             @dataclass
             class Donut(JSONCasting):
                 id: int
 
             donut_dc = Donut.from_json(json_file.read(), deserialize=True)
 
-        with open("./tests/data/nested_document.json") as json_file:
+        with open(NESTED_DOCUMENT_PATH) as json_file:
             donut_dict = json.load(json_file)
 
         self.assertTrue(donut_dc.id, donut_dict["id"])

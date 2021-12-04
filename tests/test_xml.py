@@ -9,6 +9,11 @@ from common import field as dcfield
 from xmlclasses import XMLCasting, Config, XMLConfig
 
 
+FLAT_DOCUMENT_PATH = "./tests/data/flat_document.xml"
+DATATYPE_DOCUMENT_PATH = "./tests/data/datatype_document.xml"
+NESTED_DOCUMENT_PATH = "./tests/data/nested_document.xml"
+
+
 class TestXMLMixinWithFlatDocument(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -20,7 +25,7 @@ class TestXMLMixinWithFlatDocument(unittest.TestCase):
             body: str
 
         self.Note = Note
-        self.note_tree = ET.parse("./tests/data/flat_document.xml")
+        self.note_tree = ET.parse(FLAT_DOCUMENT_PATH)
 
     def test_instantiation(self):
         try:
@@ -84,7 +89,7 @@ class TestXMLMixinWithNestedDocument(unittest.TestCase):
             maple_topping: str = dcfield(config=XMLConfig(xpath="./topping[@id='5004']"))
 
         self.FoodItem = FoodItem
-        self.fooditem_tree = ET.parse("./tests/data/nested_document.xml")
+        self.fooditem_tree = ET.parse(NESTED_DOCUMENT_PATH)
 
     def test_nested_elements_are_found(self):
         fooditem_dc = self.FoodItem.from_xml(self.fooditem_tree)
@@ -124,7 +129,7 @@ class TestFieldSimpleAndSpecialConfig(unittest.TestCase):
             rating: int = dcfield(config=XMLConfig(xpath="./rating"))
 
         self.Biscuit = Biscuit
-        self.biscuit_tree = ET.parse("./tests/data/datatype_document.xml")
+        self.biscuit_tree = ET.parse(DATATYPE_DOCUMENT_PATH)
 
     def test_fieldwrapper_preserves_metadata(self):
         config = Config()
@@ -177,7 +182,7 @@ class TestFieldComplexConfig(unittest.TestCase):
         class Cake(XMLCasting):
             batters: list = dcfield(config=XMLConfig(xpath="./batters/batter"))
 
-        cake_tree = ET.parse("./tests/data/nested_document.xml")
+        cake_tree = ET.parse(NESTED_DOCUMENT_PATH)
         cake_dc = Cake.from_xml(cake_tree)
 
         batters = [batter.text for batter in cake_tree.findall("./batters/batter")]
@@ -189,7 +194,7 @@ class TestFieldComplexConfig(unittest.TestCase):
         class Cake(XMLCasting):
             batters: list = dcfield(config=XMLConfig(xpath="./batters/batter/@id"))
 
-        cake_tree = ET.parse("./tests/data/nested_document.xml")
+        cake_tree = ET.parse(NESTED_DOCUMENT_PATH)
         cake_dc = Cake.from_xml(cake_tree)
 
         batters = [batter.get("id") for batter in cake_tree.findall("./batters/batter")]
@@ -201,7 +206,7 @@ class TestFieldComplexConfig(unittest.TestCase):
         class Cake(XMLCasting):
             batters: list[int] = dcfield(config=XMLConfig(xpath="./batters/batter/@id"))
 
-        cake_tree = ET.parse("./tests/data/nested_document.xml")
+        cake_tree = ET.parse(NESTED_DOCUMENT_PATH)
         cake_dc = Cake.from_xml(cake_tree)
 
         batters = [int(batter.get("id")) for batter in cake_tree.findall("./batters/batter")]
@@ -212,14 +217,14 @@ class TestFieldComplexConfig(unittest.TestCase):
 class TestDeserialization(unittest.TestCase):
 
     def test_deserialization(self):
-        with open("./tests/data/datatype_document.xml") as xml_file:
+        with open(DATATYPE_DOCUMENT_PATH) as xml_file:
             @dataclass
             class Biscuit(XMLCasting):
                 id: str = dcfield(config=XMLConfig(xpath="./@id"))
 
             donut_dc = Biscuit.from_xml(xml_file.read(), deserialize=True)
 
-        tree = ET.parse("./tests/data/datatype_document.xml").getroot()
+        tree = ET.parse(DATATYPE_DOCUMENT_PATH).getroot()
 
         self.assertTrue(donut_dc.id, tree.get("id"))
 
