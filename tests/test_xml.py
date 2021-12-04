@@ -6,14 +6,14 @@ from datetime import datetime
 
 
 from common import field as dcfield
-from xml_mixin import XMLMixin, Config, XMLConfig
+from xmlclasses import XMLCasting, Config, XMLConfig
 
 
 class TestXMLMixinWithFlatDocument(unittest.TestCase):
 
     def setUp(self) -> None:
         @dataclass
-        class Note(XMLMixin):
+        class Note(XMLCasting):
             recipient: str
             sender: str
             heading: str
@@ -24,7 +24,7 @@ class TestXMLMixinWithFlatDocument(unittest.TestCase):
 
     def test_instantiation(self):
         try:
-            XMLMixin()
+            XMLCasting()
         except Exception as e:
             self.fail(e)
 
@@ -70,7 +70,7 @@ class TestXMLMixinWithFlatDocument(unittest.TestCase):
 class TestXMLMixinWithNestedDocument(unittest.TestCase):
     def setUp(self) -> None:
         @dataclass
-        class FoodItem(XMLMixin):
+        class FoodItem(XMLCasting):
             name: str = dcfield(config=XMLConfig(xpath="./name"))
             ppu: float = dcfield(config=XMLConfig(xpath="./ppu"))
             regular_batter: str = dcfield(config=XMLConfig(xpath="./batters/batter[@id='1001']"))
@@ -116,7 +116,7 @@ class TestFieldSimpleAndSpecialConfig(unittest.TestCase):
 
     def setUp(self) -> None:
         @dataclass
-        class Biscuit(XMLMixin):
+        class Biscuit(XMLCasting):
             name: str = dcfield(config=XMLConfig(xpath="./name"))
             weight: float = dcfield(config=XMLConfig(xpath="./weight"))
             baked_on: datetime = dcfield(config=XMLConfig(xpath="./baked_on"))
@@ -174,7 +174,7 @@ class TestFieldComplexConfig(unittest.TestCase):
 
     def test_datatype_casting_for_list_type_text(self):
         @dataclass
-        class Cake(XMLMixin):
+        class Cake(XMLCasting):
             batters: list = dcfield(config=XMLConfig(xpath="./batters/batter"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
@@ -186,7 +186,7 @@ class TestFieldComplexConfig(unittest.TestCase):
 
     def test_datatype_casting_for_list_type_attrib(self):
         @dataclass
-        class Cake(XMLMixin):
+        class Cake(XMLCasting):
             batters: list = dcfield(config=XMLConfig(xpath="./batters/batter/@id"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
@@ -198,7 +198,7 @@ class TestFieldComplexConfig(unittest.TestCase):
 
     def test_datatype_casting_for_list_type_attrib_with_simple_element_type(self):
         @dataclass
-        class Cake(XMLMixin):
+        class Cake(XMLCasting):
             batters: list[int] = dcfield(config=XMLConfig(xpath="./batters/batter/@id"))
 
         cake_tree = ET.parse("./tests/data/nested_document.xml")
@@ -214,7 +214,7 @@ class TestDeserialization(unittest.TestCase):
     def test_deserialization(self):
         with open("./tests/data/datatype_document.xml") as xml_file:
             @dataclass
-            class Biscuit(XMLMixin):
+            class Biscuit(XMLCasting):
                 id: str = dcfield(config=XMLConfig(xpath="./@id"))
 
             donut_dc = Biscuit.from_xml(xml_file.read(), deserialize=True)

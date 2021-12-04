@@ -13,7 +13,7 @@ class XMLConfig(Config):
         self.xpath = xpath
 
 
-class XMLMixin(Casting):
+class XMLCasting(Casting):
 
     @classmethod
     def _get_text_values(cls, elements: List[Element]) -> List[str]:

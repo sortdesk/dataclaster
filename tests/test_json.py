@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 from dataclasses import dataclass
 
-from json_mixin import JSONCasting, JSONConfig
+from jsonclasses import JSONCasting, JSONConfig
 from common import field as dcfield
 
 
