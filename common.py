@@ -29,7 +29,7 @@ def field(*, config, default=MISSING, default_factory=MISSING, init=True,
     return FieldWithConfig(config, default, default_factory, init, repr, hash, compare, metadata)
 
 
-class BaseMixin:
+class Casting:
     SIMPLE_TYPES = [str, int, float]
     SPECIAL_TYPES = [bool, datetime]
     COMPLEX_TYPES = [list]

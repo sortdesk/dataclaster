@@ -4,7 +4,7 @@ from typing import List, Any, Union
 import lxml.etree as ET
 from lxml.etree import Element
 
-from common import Config, BaseMixin
+from common import Config, Casting
 from exceptions import TooManyMatchesError
 
 
@@ -13,7 +13,7 @@ class XMLConfig(Config):
         self.xpath = xpath
 
 
-class XMLMixin(BaseMixin):
+class XMLMixin(Casting):
 
     @classmethod
     def _get_text_values(cls, elements: List[Element]) -> List[str]:

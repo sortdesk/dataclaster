@@ -4,7 +4,7 @@ from typing import Union, Any
 import json
 import jsonpath_rw
 
-from common import Config, BaseMixin
+from common import Config, Casting
 from exceptions import TooManyMatchesError, NoMatchesError
 
 
@@ -13,7 +13,7 @@ class JSONConfig(Config):
         self.path = path
 
 
-class JSONMixin(BaseMixin):
+class JSONMixin(Casting):
 
     @classmethod
     def _process_field(cls, field: fieldtype, json_dict: dict) -> Any:
