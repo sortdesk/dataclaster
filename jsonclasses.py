@@ -13,7 +13,7 @@ class JSONConfig(Config):
         self.path = path
 
 
-class JSONMixin(Casting):
+class JSONCasting(Casting):
 
     @classmethod
     def _process_field(cls, field: fieldtype, json_dict: dict) -> Any:

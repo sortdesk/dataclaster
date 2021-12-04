@@ -77,11 +77,11 @@ Dataclaster aims to solve this problem by allowing you to store both things - th
 The example above can be easily rewritten using dataclaster.
 
 ```python
-from dataclaster.json_mixin import JSONMixin, JSONConfig
+from dataclaster.jsonclasses import JSONCasting, JSONConfig
 from dataclaster.common import field as dcfield
 
 @dataclass
-class Pastry(JSONMixin):
+class Pastry(JSONCasting):
     category: str
     name: str
     average_rating: float = dcfield(config=JSONConfig(path="rating.average"))

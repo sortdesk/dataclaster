@@ -4,14 +4,14 @@ from datetime import datetime
 import json
 from dataclasses import dataclass
 
-from json_mixin import JSONMixin, JSONConfig
+from json_mixin import JSONCasting, JSONConfig
 from common import field as dcfield
 
 
 class TestJSONMixinWithFlatDocument(unittest.TestCase):
     def setUp(self) -> None:
         @dataclass
-        class Note(JSONMixin):
+        class Note(JSONCasting):
             recipient: str
             sender: str
             heading: str
@@ -25,7 +25,7 @@ class TestJSONMixinWithFlatDocument(unittest.TestCase):
 
     def test_instantiation(self):
         try:
-            JSONMixin()
+            JSONCasting()
         except Exception as e:
             self.fail(e)
 
@@ -52,7 +52,7 @@ class TestJSONMixinWithFlatDocument(unittest.TestCase):
 class TestJSONMixinDataTypes(unittest.TestCase):
     def setUp(self) -> None:
         @dataclass
-        class Note(JSONMixin):
+        class Note(JSONCasting):
             recipient: str
             sender: str
             heading: str
@@ -76,7 +76,7 @@ class TestJSONMixinDataTypes(unittest.TestCase):
 class TestJSONMixinWithNestedDocument(unittest.TestCase):
     def setUp(self) -> None:
         @dataclass
-        class Donut(JSONMixin):
+        class Donut(JSONCasting):
             id: int
             type: str
             name: str
@@ -120,7 +120,7 @@ class TestDeserialization(unittest.TestCase):
     def test_deserialization(self):
         with open("./tests/data/nested_document.json") as json_file:
             @dataclass
-            class Donut(JSONMixin):
+            class Donut(JSONCasting):
                 id: int
 
             donut_dc = Donut.from_json(json_file.read(), deserialize=True)
