@@ -1,8 +1,10 @@
-from dataclasses import Field, fields, MISSING
+from dataclasses import Field, fields, MISSING, dataclass
 from datetime import datetime
 from distutils.util import strtobool
 import typing
+from typing import Any, Union
 from dateutil.parser import parse
+from lxml.etree import Element
 
 
 class Config:
@@ -10,7 +12,7 @@ class Config:
 
 
 class FieldWithConfig(Field):
-    def __init__(self, config, *args, **kwargs) -> None:
+    def __init__(self, config: Config, *args, **kwargs) -> None:
         self.config = config
         super().__init__(*args, **kwargs)
 
@@ -35,18 +37,18 @@ class BaseMixin:
     SUPPORTED_TYPES = SIMPLE_TYPES + SPECIAL_TYPES + COMPLEX_TYPES
 
     @classmethod
-    def raise_for_types_not_supported(cls, data_type):
+    def raise_for_types_not_supported(cls, data_type: type) -> None:
         base_type = cls.get_base_type(data_type)
 
         if base_type not in cls.SUPPORTED_TYPES:
             raise NotImplementedError(f"Data type {data_type} is not supported yet.")
 
     @classmethod
-    def get_base_type(cls, data_type):
+    def get_base_type(cls, data_type: type) -> Any:
         return typing.get_origin(data_type) or data_type  # handle e.g. list[str]
 
     @classmethod
-    def cast_value_to_type(cls, value, data_type):
+    def cast_value_to_type(cls, value: Any, data_type: type) -> Any:
 
         cls.raise_for_types_not_supported(data_type)
         base_type = cls.get_base_type(data_type)
@@ -61,7 +63,7 @@ class BaseMixin:
             return cls.cast_complex_type(value, data_type)
 
     @classmethod
-    def cast_special_type(cls, value, data_type):
+    def cast_special_type(cls, value: Any, data_type: type) -> Union[bool, datetime]:
         if data_type == bool:
             return bool(strtobool(value))
         if data_type == datetime:
@@ -69,7 +71,7 @@ class BaseMixin:
         raise NotImplementedError()
 
     @classmethod
-    def cast_complex_type(cls, value: list, data_type: type):
+    def cast_complex_type(cls, value: list, data_type: type) -> list:
         base_type = cls.get_base_type(data_type)
 
         if base_type == list:  # only `list` support for no
@@ -79,6 +81,6 @@ class BaseMixin:
         raise NotImplementedError()
 
     @classmethod
-    def to_dataclass(cls, raw_data):
+    def to_dataclass(cls, raw_data: Union[dict, Element]) -> dataclass:
         dc = cls(**{field.name: cls._process_field(field, raw_data) for field in fields(cls)})
         return dc
